@@ -139,6 +139,7 @@ EndlessRails/
 │   ├── build_android.sh        # CLI APK+AAB build
 │   ├── generate_keystore.sh    # Development keystore generator
 │   ├── check_sources.py        # Static source consistency checker
+│   ├── compile_check/          # Offline compile test (dotnet, no Unity needed)
 │   └── keystore/               # Development signing keystore
 ├── .github/workflows/          # game-ci Android build
 ├── README.md

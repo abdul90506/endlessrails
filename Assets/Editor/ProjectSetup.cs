@@ -91,7 +91,7 @@ namespace EndlessRails.EditorTools
             // Serialized as activeInputHandler in ProjectSettings.asset (0 = legacy).
 
             // Splash: keep the required Unity splash on Personal licenses.
-            PlayerSettings.SplashScreen.showUnitySplashScreen = true;
+            PlayerSettings.SplashScreen.show = true;
 
             Debug.Log("[EndlessRails] Android player settings configured (API 24+, ARM64, IL2CPP, landscape).");
         }

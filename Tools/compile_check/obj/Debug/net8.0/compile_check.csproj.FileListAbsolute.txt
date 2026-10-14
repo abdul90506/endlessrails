@@ -1,0 +1,12 @@
+/home/user/EndlessRails/Tools/compile_check/bin/Debug/net8.0/Assembly-CSharp.deps.json
+/home/user/EndlessRails/Tools/compile_check/bin/Debug/net8.0/Assembly-CSharp.dll
+/home/user/EndlessRails/Tools/compile_check/bin/Debug/net8.0/Assembly-CSharp.pdb
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/compile_check.GeneratedMSBuildEditorConfig.editorconfig
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/compile_check.AssemblyInfoInputs.cache
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/compile_check.AssemblyInfo.cs
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/compile_check.csproj.CoreCompileInputs.cache
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/compile_check.sourcelink.json
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/Assembly-CSharp.dll
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/refint/Assembly-CSharp.dll
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/Assembly-CSharp.pdb
+/home/user/EndlessRails/Tools/compile_check/obj/Debug/net8.0/ref/Assembly-CSharp.dll
