@@ -22,6 +22,9 @@ namespace EndlessRails
         private readonly Dictionary<string, GameObject> _panelByName = new Dictionary<string, GameObject>(12);
         private string _currentPanel = "";
 
+        private static readonly string[] KnownPanelNames =
+        { "HUD", "MainMenu", "PauseMenu", "GameOver", "Settings", "CharacterSelect", "HighScores", "Tutorial" };
+
         protected override void OnSingletonAwake()
         {
             foreach (var entry in panels)
@@ -30,6 +33,31 @@ namespace EndlessRails
                 {
                     _panelByName[entry.name] = entry.panel;
                 }
+            }
+
+            // Safety net: if the serialized panel list ever comes through empty,
+            // discover the panels on the canvas by name. Without this, Show()
+            // would silently do nothing and every screen would stay visible.
+            if (_panelByName.Count == 0)
+            {
+                Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+                if (canvas != null)
+                {
+                    foreach (string panelName in KnownPanelNames)
+                    {
+                        Transform found = canvas.transform.Find(panelName);
+                        if (found != null)
+                        {
+                            _panelByName[panelName] = found.gameObject;
+                        }
+                    }
+                    Debug.LogWarning($"[EndlessRails] UIManager panel list was empty - auto-registered {_panelByName.Count} panels from the canvas.");
+                }
+            }
+
+            if (_panelByName.Count == 0)
+            {
+                Debug.LogError("[EndlessRails] UIManager found no panels - UI screens cannot be switched!");
             }
         }
 

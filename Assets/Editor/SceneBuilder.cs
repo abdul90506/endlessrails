@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Events;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -341,6 +342,14 @@ namespace EndlessRails.EditorTools
                 eventSystem.AddComponent<StandaloneInputModule>();
             }
 
+            // UIManager (created on the Systems object earlier) - needed for the
+            // pause button and for panel registration at the end.
+            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
+            if (uiManager == null)
+            {
+                Debug.LogError("[EndlessRails][SceneBuilder] UIManager not found - UI buttons cannot be wired!");
+            }
+
             // --- HUD ---
             GameObject hud = BuildPanel(canvasGo.transform, "HUD");
             BuildText(hud.transform, "ScoreText", "0", new Vector2(0f, -46f), new Vector2(420f, 80f), 58, TextAnchor.UpperLeft, FontStyle.Bold);
@@ -350,7 +359,7 @@ namespace EndlessRails.EditorTools
             BuildText(hud.transform, "FpsText", "", new Vector2(0f, 40f), new Vector2(220f, 40f), 24, TextAnchor.LowerRight);
 
             // Powerup rings (timer rings) top-right.
-            float ringX = -70f;
+            float ringX = -260f;
             foreach (string ringName in new[] { "Magnet", "Jetpack", "Shield", "Multiplier" })
             {
                 GameObject ring = BuildImage(hud.transform, ringName + "Ring", new Vector2(ringX, -70f), new Vector2(84f, 84f), new Color(1f, 1f, 1f, 0.85f));
@@ -365,25 +374,25 @@ namespace EndlessRails.EditorTools
             }
 
             // Pause button.
-            GameObject pauseButton = BuildButton(hud.transform, "PauseButton", "II", new Vector2(-110f, -46f), new Vector2(84f, 84f));
-            HookButton(pauseButton, UIManagerHook("OnPausePressed"));
+            GameObject pauseButton = BuildButton(hud.transform, "PauseButton", "II", new Vector2(-120f, -50f), new Vector2(100f, 100f));
+            WireButton(pauseButton, uiManager, nameof(UIManager.OnPausePressed));
 
             // --- Main menu ---
             GameObject menu = BuildPanel(canvasGo.transform, "MainMenu");
-            menu.AddComponent<MainMenu>();
+            MainMenu mainMenu = menu.AddComponent<MainMenu>();
             BuildText(menu.transform, "TitleText", "ENDLESS RAILS", new Vector2(0f, 300f), new Vector2(1100f, 140f), 96, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildText(menu.transform, "SubtitleText", "A procedural urban rail runner", new Vector2(0f, 205f), new Vector2(900f, 60f), 32, TextAnchor.MiddleCenter);
 
             GameObject play = BuildButton(menu.transform, "PlayButton", "PLAY", new Vector2(0f, 70f), new Vector2(460f, 110f));
-            HookButton(play, ComponentHook<MainMenu>("OnPlay"));
+            WireButton(play, mainMenu, nameof(MainMenu.OnPlay));
             GameObject characters = BuildButton(menu.transform, "CharactersButton", "CHARACTER SELECT", new Vector2(0f, -55f), new Vector2(460f, 84f));
-            HookButton(characters, ComponentHook<MainMenu>("OnCharacterSelect"));
+            WireButton(characters, mainMenu, nameof(MainMenu.OnCharacterSelect));
             GameObject settings = BuildButton(menu.transform, "SettingsButton", "SETTINGS", new Vector2(0f, -155f), new Vector2(460f, 84f));
-            HookButton(settings, ComponentHook<MainMenu>("OnSettings"));
+            WireButton(settings, mainMenu, nameof(MainMenu.OnSettings));
             GameObject scores = BuildButton(menu.transform, "ScoresButton", "HIGH SCORES", new Vector2(0f, -255f), new Vector2(460f, 84f));
-            HookButton(scores, ComponentHook<MainMenu>("OnHighScores"));
+            WireButton(scores, mainMenu, nameof(MainMenu.OnHighScores));
             GameObject quit = BuildButton(menu.transform, "QuitButton", "QUIT", new Vector2(0f, -355f), new Vector2(460f, 84f));
-            HookButton(quit, ComponentHook<MainMenu>("OnQuit"));
+            WireButton(quit, mainMenu, nameof(MainMenu.OnQuit));
 
             BuildText(menu.transform, "BestScoreText", "Best: 0", new Vector2(620f, 70f), new Vector2(420f, 50f), 34, TextAnchor.MiddleLeft);
             BuildText(menu.transform, "CoinsText", "0", new Vector2(620f, 10f), new Vector2(420f, 50f), 34, TextAnchor.MiddleLeft);
@@ -392,20 +401,20 @@ namespace EndlessRails.EditorTools
 
             // --- Pause menu ---
             GameObject pause = BuildPanel(canvasGo.transform, "PauseMenu");
-            pause.AddComponent<PauseMenu>();
+            PauseMenu pauseMenu = pause.AddComponent<PauseMenu>();
             BuildText(pause.transform, "PauseTitle", "PAUSED", new Vector2(0f, 240f), new Vector2(700f, 110f), 80, TextAnchor.MiddleCenter, FontStyle.Bold);
             GameObject resume = BuildButton(pause.transform, "ResumeButton", "RESUME", new Vector2(0f, 90f), new Vector2(420f, 96f));
-            HookButton(resume, ComponentHook<PauseMenu>("OnResume"));
+            WireButton(resume, pauseMenu, nameof(PauseMenu.OnResume));
             GameObject restart2 = BuildButton(pause.transform, "RestartButton", "RESTART", new Vector2(0f, -20f), new Vector2(420f, 96f));
-            HookButton(restart2, ComponentHook<PauseMenu>("OnRestart"));
+            WireButton(restart2, pauseMenu, nameof(PauseMenu.OnRestart));
             GameObject pauseSettings = BuildButton(pause.transform, "SettingsButton", "SETTINGS", new Vector2(0f, -130f), new Vector2(420f, 96f));
-            HookButton(pauseSettings, ComponentHook<PauseMenu>("OnSettings"));
+            WireButton(pauseSettings, pauseMenu, nameof(PauseMenu.OnSettings));
             GameObject menuBtn = BuildButton(pause.transform, "MainMenuButton", "MAIN MENU", new Vector2(0f, -240f), new Vector2(420f, 96f));
-            HookButton(menuBtn, ComponentHook<PauseMenu>("OnMainMenu"));
+            WireButton(menuBtn, pauseMenu, nameof(PauseMenu.OnMainMenu));
 
             // --- Game over ---
             GameObject gameover = BuildPanel(canvasGo.transform, "GameOver");
-            gameover.AddComponent<GameOverScreen>();
+            GameOverScreen gameOverMenu = gameover.AddComponent<GameOverScreen>();
             BuildText(gameover.transform, "GameOverTitle", "CAUGHT!", new Vector2(0f, 300f), new Vector2(900f, 110f), 86, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildText(gameover.transform, "NewBestLabel", "NEW BEST!", new Vector2(0f, 215f), new Vector2(600f, 60f), 42, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildText(gameover.transform, "FinalScoreText", "0", new Vector2(0f, 130f), new Vector2(600f, 80f), 62, TextAnchor.MiddleCenter, FontStyle.Bold);
@@ -413,15 +422,15 @@ namespace EndlessRails.EditorTools
             BuildText(gameover.transform, "CoinsText", "+0", new Vector2(220f, 30f), new Vector2(360f, 50f), 34, TextAnchor.MiddleCenter);
             BuildText(gameover.transform, "DistanceText", "0 m", new Vector2(0f, -30f), new Vector2(500f, 50f), 32, TextAnchor.MiddleCenter);
             GameObject revive = BuildButton(gameover.transform, "ReviveButton", "REVIVE (AD)", new Vector2(0f, -140f), new Vector2(420f, 92f));
-            HookButton(revive, ComponentHook<GameOverScreen>("OnRevive"));
+            WireButton(revive, gameOverMenu, nameof(GameOverScreen.OnRevive));
             GameObject goRestart = BuildButton(gameover.transform, "RestartButton", "RESTART", new Vector2(0f, -245f), new Vector2(420f, 92f));
-            HookButton(goRestart, ComponentHook<GameOverScreen>("OnRestart"));
+            WireButton(goRestart, gameOverMenu, nameof(GameOverScreen.OnRestart));
             GameObject goMenu = BuildButton(gameover.transform, "MainMenuButton", "MAIN MENU", new Vector2(0f, -350f), new Vector2(420f, 92f));
-            HookButton(goMenu, ComponentHook<GameOverScreen>("OnMainMenu"));
+            WireButton(goMenu, gameOverMenu, nameof(GameOverScreen.OnMainMenu));
 
             // --- Settings ---
             GameObject settingsPanel = BuildPanel(canvasGo.transform, "Settings");
-            settingsPanel.AddComponent<SettingsMenu>();
+            SettingsMenu settingsMenu = settingsPanel.AddComponent<SettingsMenu>();
             BuildText(settingsPanel.transform, "SettingsTitle", "SETTINGS", new Vector2(0f, 330f), new Vector2(800f, 100f), 72, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildSlider(settingsPanel.transform, "MusicSlider", "Music Volume", new Vector2(0f, 200f));
             BuildSlider(settingsPanel.transform, "SfxSlider", "SFX Volume", new Vector2(0f, 90f));
@@ -450,7 +459,7 @@ namespace EndlessRails.EditorTools
             BuildToggle(settingsPanel.transform, "FpsToggle", "Show FPS counter", new Vector2(0f, -380f));
 
             GameObject settingsBack = BuildButton(settingsPanel.transform, "BackButton", "BACK", new Vector2(0f, -450f), new Vector2(320f, 84f));
-            HookButton(settingsBack, ComponentHook<SettingsMenu>("OnBack"));
+            WireButton(settingsBack, settingsMenu, nameof(SettingsMenu.OnBack));
 
             // --- Character select ---
             GameObject characterPanel = BuildPanel(canvasGo.transform, "CharacterSelect");
@@ -478,7 +487,7 @@ namespace EndlessRails.EditorTools
             layoutElement.preferredHeight = 110f;
 
             GameObject characterBack = BuildButton(characterPanel.transform, "BackButton", "BACK", new Vector2(0f, -420f), new Vector2(320f, 84f));
-            HookButton(characterBack, ComponentHook<CharacterSelectMenu>("OnBack"));
+            WireButton(characterBack, characterMenu, nameof(CharacterSelectMenu.OnBack));
 
             var charSo = new SerializedObject(characterMenu);
             charSo.FindProperty("characters").arraySize = 3;
@@ -491,11 +500,11 @@ namespace EndlessRails.EditorTools
 
             // --- High scores ---
             GameObject scoresPanel = BuildPanel(canvasGo.transform, "HighScores");
-            scoresPanel.AddComponent<HighScoresScreen>();
+            HighScoresScreen highScoresMenu = scoresPanel.AddComponent<HighScoresScreen>();
             BuildText(scoresPanel.transform, "HighScoresTitle", "HIGH SCORES", new Vector2(0f, 330f), new Vector2(900f, 100f), 72, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildText(scoresPanel.transform, "StatsText", "", new Vector2(0f, 20f), new Vector2(800f, 520f), 34, TextAnchor.UpperCenter);
             GameObject scoresBack = BuildButton(scoresPanel.transform, "BackButton", "BACK", new Vector2(0f, -380f), new Vector2(320f, 84f));
-            HookButton(scoresBack, ComponentHook<HighScoresScreen>("OnBack"));
+            WireButton(scoresBack, highScoresMenu, nameof(HighScoresScreen.OnBack));
 
             // --- Tutorial overlay ---
             GameObject tutorial = BuildPanel(canvasGo.transform, "Tutorial");
@@ -506,10 +515,18 @@ namespace EndlessRails.EditorTools
             }
             BuildText(tutorial.transform, "TutorialTitle", "HOW TO PLAY", new Vector2(0f, 260f), new Vector2(900f, 100f), 70, TextAnchor.MiddleCenter, FontStyle.Bold);
             BuildText(tutorial.transform, "BodyText", "", new Vector2(0f, -20f), new Vector2(1000f, 480f), 36, TextAnchor.MiddleCenter);
-            tutorial.AddComponent<TutorialOverlay>();
+            TutorialOverlay tutorialOverlay = tutorial.AddComponent<TutorialOverlay>();
+
+            // Tap anywhere on the overlay dismisses it (the panel image is the
+            // touch target - no visible colour change), plus an explicit button.
+            Button tutorialTapArea = tutorial.AddComponent<Button>();
+            tutorialTapArea.transition = Selectable.Transition.None;
+            WireButton(tutorial, tutorialOverlay, nameof(TutorialOverlay.Dismiss));
+
+            GameObject tutorialStart = BuildButton(tutorial.transform, "StartButton", "START", new Vector2(0f, -350f), new Vector2(400f, 104f));
+            WireButton(tutorialStart, tutorialOverlay, nameof(TutorialOverlay.Dismiss));
 
             // --- Panel registration on UIManager ---
-            UIManager uiManager = Object.FindFirstObjectByType<UIManager>();
             if (uiManager != null)
             {
                 var so = new SerializedObject(uiManager);
@@ -524,6 +541,38 @@ namespace EndlessRails.EditorTools
                 }
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            // Final check: every button must carry at least one *persistent* listener,
+            // otherwise the click would be dead in the built APK.
+            VerifyButtonWiring(canvasGo);
+        }
+
+        /// <summary>
+        /// Logs how many buttons in the canvas have persistent (serialized) click
+        /// handlers. Buttons without one are silently dead in a build, so any
+        /// unexpected entry here is a real bug. (The disabled CharacterCard
+        /// template is wired at runtime by CharacterSelectMenu - expected.)
+        /// </summary>
+        private static void VerifyButtonWiring(GameObject canvasGo)
+        {
+            int wired = 0;
+            int expectedRuntime = 0;
+            foreach (Button button in canvasGo.GetComponentsInChildren<Button>(true))
+            {
+                if (button.onClick.GetPersistentEventCount() > 0)
+                {
+                    wired++;
+                }
+                else if (button.name == "CharacterCard")
+                {
+                    expectedRuntime++;
+                }
+                else
+                {
+                    Debug.LogError($"[EndlessRails][SceneBuilder] Button '{button.name}' has NO persistent click listener - it would be dead in the build!");
+                }
+            }
+            Debug.Log($"[EndlessRails][SceneBuilder] Button wiring verified: {wired} persistent, {expectedRuntime} runtime-only (card template).");
         }
 
         private static Color RingColor(string ringName)
@@ -550,6 +599,9 @@ namespace EndlessRails.EditorTools
             rect.offsetMax = Vector2.zero;
             Image image = panel.AddComponent<Image>();
             image.color = name == "HUD" ? new Color(0f, 0f, 0f, 0f) : new Color(0.05f, 0.07f, 0.12f, 0.93f);
+            // The HUD is a transparent full-screen layer - it must never intercept
+            // touches. Every other panel keeps its image as the touch surface.
+            image.raycastTarget = name != "HUD";
             return panel;
         }
 
@@ -570,6 +622,9 @@ namespace EndlessRails.EditorTools
             text.color = Color.white;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
+            // Labels are decorative - they must NEVER block raycasts, otherwise a
+            // text drawn above a button silently swallows the tap.
+            text.raycastTarget = false;
             return go;
         }
 
@@ -658,6 +713,10 @@ namespace EndlessRails.EditorTools
             slider.targetGraphic = handle.GetComponent<Image>();
             slider.direction = Slider.Direction.LeftToRight;
             slider.value = 0.8f;
+
+            // Large invisible touch area (the visible bar is only 16px tall,
+            // which is unusable on a phone). Drags bubble up to the Slider.
+            BuildImage(sliderGo.transform, "HitArea", Vector2.zero, new Vector2(380f, 72f), new Color(1f, 1f, 1f, 0f));
         }
 
         private static void BuildToggle(Transform parent, string name, string label, Vector2 position)
@@ -677,33 +736,44 @@ namespace EndlessRails.EditorTools
             Toggle toggle = toggleGo.AddComponent<Toggle>();
             toggle.targetGraphic = background.GetComponent<Image>();
             toggle.graphic = checkmark.GetComponent<Image>();
+
+            // Whole row is tappable (invisible touch area over box + label).
+            BuildImage(toggleGo.transform, "HitArea", Vector2.zero, new Vector2(520f, 54f), new Color(1f, 1f, 1f, 0f));
         }
 
-        private static void HookButton(GameObject buttonGo, UnityEngine.Events.UnityAction action)
+        /// <summary>
+        /// Adds a *persistent* click listener to a button pointing at a component
+        /// method. This is the crucial difference from onClick.AddListener():
+        /// a runtime AddListener() from an editor script is never serialized into
+        /// the scene, so the button is dead in a built player. Persistent listeners
+        /// (UnityEventTools) are stored inside the scene asset and work everywhere.
+        /// Using nameof() + a component reference means the method name is checked
+        /// at compile time - a typo can no longer produce a silent dead button.
+        /// </summary>
+        private static void WireButton<T>(GameObject buttonGo, T component, string methodName) where T : Component
         {
-            Button button = buttonGo.GetComponent<Button>();
-            if (button != null && action != null)
+            Button button = buttonGo != null ? buttonGo.GetComponent<Button>() : null;
+            if (button == null)
             {
-                button.onClick.AddListener(action);
+                Debug.LogError($"[EndlessRails][SceneBuilder] WireButton: no Button on '{(buttonGo != null ? buttonGo.name : "null")}'.");
+                return;
             }
-        }
+            if (component == null)
+            {
+                Debug.LogError($"[EndlessRails][SceneBuilder] WireButton: component is null for button '{buttonGo.name}' -> {methodName}.");
+                return;
+            }
 
-        private static UnityEngine.Events.UnityAction UIManagerHook(string methodName)
-        {
-            UIManager manager = Object.FindFirstObjectByType<UIManager>();
-            var method = typeof(UIManager).GetMethod(methodName);
-            return manager != null && method != null
-                ? (UnityEngine.Events.UnityAction)System.Delegate.CreateDelegate(typeof(UnityEngine.Events.UnityAction), manager, method)
-                : null;
-        }
+            var method = component.GetType().GetMethod(methodName, System.Type.EmptyTypes);
+            if (method == null)
+            {
+                Debug.LogError($"[EndlessRails][SceneBuilder] WireButton: method {component.GetType().Name}.{methodName} not found for button '{buttonGo.name}'.");
+                return;
+            }
 
-        private static UnityEngine.Events.UnityAction ComponentHook<T>(string methodName) where T : Component
-        {
-            T component = Object.FindFirstObjectByType<T>();
-            var method = typeof(T).GetMethod(methodName);
-            return component != null && method != null
-                ? (UnityEngine.Events.UnityAction)System.Delegate.CreateDelegate(typeof(UnityEngine.Events.UnityAction), component, method)
-                : null;
+            var action = (UnityEngine.Events.UnityAction)System.Delegate.CreateDelegate(
+                typeof(UnityEngine.Events.UnityAction), component, method);
+            UnityEventTools.AddPersistentListener(button.onClick, action);
         }
 
         // ==================================================================

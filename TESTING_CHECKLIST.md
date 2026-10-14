@@ -3,6 +3,25 @@
 Run through this list before shipping. Target device class: Snapdragon 720G-class
 mid-range Android (e.g. Redmi Note 9 Pro / Galaxy A52), 60 Hz display.
 
+## 0. UI Smoke Test (run this first — every clickable element)
+| # | Check | How to verify | Pass? |
+|---|---|---|---|
+| 0.1 | Tutorial overlay dismisses | Tap anywhere on it, or press START | ☐ |
+| 0.2 | Main menu buttons all respond | PLAY, CHARACTER SELECT, SETTINGS, HIGH SCORES, QUIT | ☐ |
+| 0.3 | Character select cards are tappable (buy/select) | Tap each card + BACK | ☐ |
+| 0.4 | Settings sliders drag smoothly with a finger | Drag each of the 4 sliders | ☐ |
+| 0.5 | Settings toggles + quality dropdown respond | Tap each row, open the dropdown | ☐ |
+| 0.6 | Pause button (top-right) pauses and resumes | Tap it twice mid-run | ☐ |
+| 0.7 | Pause menu buttons work | RESUME, RESTART, SETTINGS, MAIN MENU | ☐ |
+| 0.8 | Game over buttons work | REVIVE, RESTART, MAIN MENU | ☐ |
+| 0.9 | BACK buttons on Settings / Characters / High Scores | Tap BACK on each screen | ☐ |
+
+Notes: click handlers are *persistent* listeners stored in the scene
+(`SceneBuilder.WireButton` -> `UnityEventTools.AddPersistentListener`), so they
+survive into the APK. `Tools/check_sources.py` fails the build check if editor
+code ever uses runtime-only `onClick.AddListener()` again, and the scene builder
+logs a wiring summary (`VerifyButtonWiring`).
+
 ## 1. Core Loop
 | # | Check | How to verify | Pass? |
 |---|---|---|---|

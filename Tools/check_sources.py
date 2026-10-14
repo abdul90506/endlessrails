@@ -124,6 +124,23 @@ for path, src in all_sources.items():
         if f"- {tag}" not in tagmanager:
             errors.append(f"{os.path.relpath(path, ROOT)}: tag '{tag}' is neither built-in, nor in TagManager.asset, nor in EnsureTags()")
 
+# --- 7. Editor-time UI wiring must be persistent (survives into builds) ---
+# onClick.AddListener() called from an editor script is a runtime-only listener:
+# it is NOT serialized into the scene, so the button is dead in the built APK.
+# Editor code must use UnityEventTools.AddPersistentListener (SceneBuilder.WireButton).
+for path, src in all_sources.items():
+    if "/Editor/" not in path.replace(os.sep, "/"):
+        continue
+    # Ignore comments and string literals so documentation mentioning the API
+    # does not trip the check.
+    code = re.sub(r'"(?:\\.|[^"\\])*"', '""', src)
+    code = re.sub(r"//[^\n]*", "", code)
+    code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
+    for m in re.finditer(r"onClick\.AddListener\s*\(", code):
+        line_no = code[:m.start()].count("\n") + 1
+        errors.append(f"{os.path.relpath(path, ROOT)}:{line_no}: onClick.AddListener() in editor code "
+                      f"is not serialized into the build - use UnityEventTools.AddPersistentListener")
+
 print(f"Checked {len(files)} C# files.")
 for e in errors:
     print("ERROR:", e)

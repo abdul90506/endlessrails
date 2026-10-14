@@ -23,9 +23,9 @@ namespace EndlessRails
                     "SWIPE LEFT / RIGHT  -  change lane\n" +
                     "SWIPE UP  -  jump over barriers\n" +
                     "SWIPE DOWN  -  slide under beams\n" +
-                    "TAP  -  pause the game\n\n" +
+                    "II BUTTON (top-right)  -  pause\n\n" +
                     "Collect coins, grab power-ups, and don't get caught!\n\n" +
-                    "TAP ANYWHERE TO START";
+                    "TAP ANYWHERE OR PRESS START";
             }
         }
 

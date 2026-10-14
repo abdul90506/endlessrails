@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")"
 # Common local SDK locations (sandbox installs it in the home dir, not on PATH).
-for d in /home/user/dotnet /home/user/.dotnet "$HOME/dotnet" "$HOME/.dotnet"; do
+for d in /home/user/build/dotnet /home/user/dotnet /home/user/.dotnet "$HOME/dotnet" "$HOME/.dotnet"; do
     if [ -x "$d/dotnet" ]; then
         export PATH="$d:$PATH"
         export DOTNET_ROOT="$d"

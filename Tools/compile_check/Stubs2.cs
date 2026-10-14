@@ -200,3 +200,15 @@ namespace UnityEditor
         public void ClearSampleSettingOverride(string platform) { }
     }
 }
+
+// ============================== UnityEditor.Events ==============================
+namespace UnityEditor.Events
+{
+    /// <summary>Mirror of UnityEditor.Events.UnityEventTools (persistent listeners).</summary>
+    public static class UnityEventTools
+    {
+        public static void AddPersistentListener(UnityEngine.Events.UnityEvent unityEvent, UnityEngine.Events.UnityAction call) { }
+        public static void AddPersistentListener<T0>(UnityEngine.Events.UnityEvent<T0> unityEvent, UnityEngine.Events.UnityAction<T0> call) { }
+        public static void RemovePersistentListener(UnityEngine.Events.UnityEvent unityEvent, UnityEngine.Events.UnityAction call) { }
+    }
+}
