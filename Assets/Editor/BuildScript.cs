@@ -40,18 +40,21 @@ namespace EndlessRails.EditorTools
         }
 
         /// <summary>
-        /// All-in-one entry point for Unity Cloud Build Automation (or any CI):
-        /// runs project setup, generates all assets/scene, then builds a signed APK.
-        /// Set this as the "Export method" / custom build method in Build Automation:
-        ///   EndlessRails.EditorTools.BuildScript.BuildAndroidCloud
-        /// Honours the UNITY_EXPORT_PATH environment variable used by cloud builders.
+        /// Cloud-friendly preparation entry point (Unity Build Automation
+        /// "Pre-export method", CI hooks): runs project setup and generates all
+        /// materials/prefabs/configs/the Main scene, then registers the scene in
+        /// EditorBuildSettings. It deliberately does NOT call BuildPipeline -
+        /// the cloud builder's own export step produces the signed APK/AAB.
+        /// Set as Pre-export method:  EndlessRails.EditorTools.BuildScript.BuildAndroidCloud
+        /// (Even without setting it, CloudBuildGuard performs this automatically
+        /// on batch-mode builders.)
         /// </summary>
         public static void BuildAndroidCloud()
         {
             ProjectSetup.SetupProject();
             AssetFactory.GenerateAll();
             SceneBuilder.BuildScene();
-            BuildAndroidApk();
+            Debug.Log("[EndlessRails] Cloud preparation complete - project content generated.");
         }
 
         /// <summary>CLI entry point: produces a signed release AAB.</summary>

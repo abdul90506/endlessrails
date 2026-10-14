@@ -36,9 +36,7 @@ UNITY_PATH="$HOME/Unity/Hub/Editor/6000.0.32f1/Editor/Unity" ./Tools/build_andro
 1. Push this project to a GitHub repo (include `Assets/`, `Packages/`, `ProjectSettings/`, `Tools/keystore/`).
 2. [cloud.unity.com](https://cloud.unity.com) → **DevOps → Build Automation** → connect your GitHub repo (Settings → Source control).
 3. **Configurations** → new target → Platform **Android**, branch `main`, Unity version auto-detected from `ProjectVersion.txt`.
-4. Under the target's custom/advanced settings set the **Export method** to:
-   `EndlessRails.EditorTools.BuildScript.BuildAndroidCloud`
-   (this runs setup + asset generation + scene build + signed APK in one step — the project is fully self-generating).
+4. Leave custom/pre-export method fields **empty** — `CloudBuildGuard` (in `Assets/Editor/`) automatically generates all materials, prefabs, configs and the Main scene on the build machine before the export step, and registers the scene in EditorBuildSettings. (Optional: set the *Pre-export method* to `EndlessRails.EditorTools.BuildScript.BuildAndroidCloud` for explicit preparation; it does not build, so it is safe.)
 5. **Save → Build now**. Download the APK from Build history when it finishes.
 6. Free allowance (renews monthly): 200 Windows build minutes + 100 Mac/Linux minutes, 25 GB storage, 100 GB egress — an Android build of this project typically uses 15–30 minutes.
 
