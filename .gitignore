@@ -37,3 +37,7 @@ crashlytics-build.properties
 
 # Optional: uncomment to keep the development keystore private
 # Tools/keystore/
+
+# compile check build output
+Tools/compile_check/bin/
+Tools/compile_check/obj/
