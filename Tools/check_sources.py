@@ -100,18 +100,29 @@ for path, src in all_sources.items():
     if "namespace EndlessRails" not in src:
         warnings.append(f"{os.path.relpath(path, ROOT)}: missing EndlessRails namespace")
 
-# --- 6. CompareTag strings must be in TagManager ---
-with open(os.path.join(os.path.dirname(ROOT), "ProjectSettings", "TagManager.asset")) as f:
-    tagmanager = f.read()
+# --- 6. CompareTag strings must be built-in or ensured by ProjectSetup.EnsureTags ---
+tagmanager_path = os.path.join(os.path.dirname(ROOT), "ProjectSettings", "TagManager.asset")
+tagmanager = ""
+if os.path.exists(tagmanager_path):
+    with open(tagmanager_path) as f:
+        tagmanager = f.read()
+
+# Tags registered programmatically in ProjectSetup.EnsureTags.
+setup_src = all_sources.get(os.path.join(ROOT, "Editor", "ProjectSetup.cs"), "")
+ensured_tags = set()
+m = re.search(r'public static void EnsureTags\(\)\s*\{(.*?)\n        \}', setup_src, re.S)
+if m:
+    ensured_tags = set(re.findall(r'"(\w+)"', m.group(1)))
+
 # Built-in Unity tags that are always defined implicitly.
 BUILTIN_TAGS = {"Untagged", "Respawn", "Finish", "EditorOnly", "MainCamera", "Player", "GameController"}
 
 for path, src in all_sources.items():
     for tag in re.findall(r'CompareTag\("(\w+)"\)', src):
-        if tag in BUILTIN_TAGS:
+        if tag in BUILTIN_TAGS or tag in ensured_tags:
             continue
         if f"- {tag}" not in tagmanager:
-            errors.append(f"{os.path.relpath(path, ROOT)}: tag '{tag}' not defined in TagManager.asset")
+            errors.append(f"{os.path.relpath(path, ROOT)}: tag '{tag}' is neither built-in, nor in TagManager.asset, nor in EnsureTags()")
 
 print(f"Checked {len(files)} C# files.")
 for e in errors:

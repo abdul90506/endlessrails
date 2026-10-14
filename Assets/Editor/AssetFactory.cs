@@ -24,6 +24,7 @@ namespace EndlessRails.EditorTools
         [MenuItem(MenuRoot + "2. Generate Materials, Prefabs & Configs")]
         public static void GenerateAll()
         {
+            ProjectSetup.EnsureTags();
             EnsureFolders();
             BuildMaterials();
             BuildPrefabs();

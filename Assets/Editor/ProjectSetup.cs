@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -18,6 +19,7 @@ namespace EndlessRails.EditorTools
         [MenuItem(MenuRoot + "1. Setup Project (do this first)")]
         public static void SetupProject()
         {
+            EnsureTags();
             ConfigurePlayerSettings();
             EnsureUrp();
             ConfigureQuality();
@@ -26,6 +28,30 @@ namespace EndlessRails.EditorTools
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[EndlessRails] Project setup complete. Next: Tools > Endless Rails > 2. Generate Assets & Scene");
+        }
+
+        /// <summary>
+        /// Registers every custom tag used by gameplay code. Hand-written
+        /// TagManager.asset files are fragile (Unity's YAML parser is strict),
+        /// so tags are created programmatically - idempotent and cloud-safe.
+        /// </summary>
+        public static void EnsureTags()
+        {
+            string[] requiredTags =
+            {
+                "Obstacle", "Coin", "Pickup", "Chaser", "Ground",
+                "Train", "Vehicle", "Stumble", "FinishLine"
+            };
+
+            var existing = new HashSet<string>(UnityEditorInternal.InternalEditorUtility.tags);
+            foreach (string tag in requiredTags)
+            {
+                if (!existing.Contains(tag))
+                {
+                    UnityEditorInternal.InternalEditorUtility.AddTag(tag);
+                    Debug.Log($"[EndlessRails] Added tag: {tag}");
+                }
+            }
         }
 
         public static void ConfigurePlayerSettings()
