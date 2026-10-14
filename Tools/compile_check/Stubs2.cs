@@ -59,7 +59,8 @@ namespace UnityEngine
         public static float particleRaycastBudget { get => 256f; set { } }
         public static int masterTextureLimit { get => 0; set { } }
         public static UnityEngine.Rendering.RenderPipelineAsset renderPipeline { get => null; set { } }
-        public static void SetRenderPipelineAssetAt(int index, UnityEngine.Rendering.RenderPipelineAsset asset) { }
+        // NOTE: QualitySettings.SetRenderPipelineAssetAt is NOT public API in Unity 6000.0.32f1
+        // (CS0117 in a real cloud build) - deliberately NOT stubbed. Use GraphicsSettings.defaultRenderPipeline.
         public static UnityEngine.Rendering.RenderPipelineAsset GetRenderPipelineAssetAt(int index) => null;
         public static UnityEngine.Rendering.ColorSpace activeColorSpace => default;
     }

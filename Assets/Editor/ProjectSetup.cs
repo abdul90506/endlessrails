@@ -19,15 +19,32 @@ namespace EndlessRails.EditorTools
         [MenuItem(MenuRoot + "1. Setup Project (do this first)")]
         public static void SetupProject()
         {
-            EnsureTags();
-            ConfigurePlayerSettings();
-            EnsureUrp();
-            ConfigureQuality();
-            ConfigureAudioImporterDefaults();
-            ConfigureTextureImporterDefaults();
+            Safe("EnsureTags", EnsureTags);
+            Safe("ConfigurePlayerSettings", ConfigurePlayerSettings);
+            Safe("EnsureUrp", EnsureUrp);
+            Safe("ConfigureQuality", ConfigureQuality);
+            Safe("ConfigureAudioImporterDefaults", ConfigureAudioImporterDefaults);
+            Safe("ConfigureTextureImporterDefaults", ConfigureTextureImporterDefaults);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[EndlessRails] Project setup complete. Next: Tools > Endless Rails > 2. Generate Assets & Scene");
+        }
+
+        /// <summary>
+        /// Runs a single setup step. A failure in one step never aborts the rest -
+        /// important on cloud builders, so that asset/scene generation still runs
+        /// even if (for example) URP setup throws an error.
+        /// </summary>
+        private static void Safe(string stepName, System.Action step)
+        {
+            try
+            {
+                step();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[EndlessRails] Setup step '{stepName}' failed (continuing): {e}");
+            }
         }
 
         /// <summary>
@@ -144,11 +161,12 @@ namespace EndlessRails.EditorTools
                 SetSerialized(serialized, "m_SupportsHDR", true);
                 serialized.ApplyModifiedPropertiesWithoutUndo();
 
+                // Unity 6 public API: assign the *default* render pipeline. Quality levels
+                // without an override (the default in a fresh project) fall back to it.
+                // QualitySettings.SetRenderPipelineAssetAt is NOT public API (CS0117 on Unity
+                // 6000.0.32f1), so only the public property is used here.
                 GraphicsSettings.defaultRenderPipeline = pipeline as RenderPipelineAsset;
-                for (int i = 0; i < QualitySettings.names.Length; i++)
-                {
-                    QualitySettings.SetRenderPipelineAssetAt(i, pipeline as RenderPipelineAsset);
-                }
+                QualitySettings.renderPipeline = null;
                 Debug.Log("[EndlessRails] URP pipeline asset created and assigned.");
             }
         }
