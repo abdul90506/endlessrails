@@ -1,0 +1,39 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Asset meta noise
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# IDE
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.userprefs
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+
+# Crash reports
+sysinfo.txt
+crashlytics-build.properties
+
+# Optional: uncomment to keep the development keystore private
+# Tools/keystore/

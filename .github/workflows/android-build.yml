@@ -1,0 +1,65 @@
+# =============================================================================
+# Endless Rails - Android CI build (GitHub Actions + game-ci)
+# =============================================================================
+# Builds a signed APK on every push to main. Requires these repo secrets:
+#   UNITY_LICENSE      - contents of your .ulf license file (personal license)
+#   or UNITY_EMAIL / UNITY_PASSWORD / UNITY_SERIAL for Plus/Pro
+#   ANDROID_KEYSTORE_BASE64  - base64 of your .keystore (base64 -w0 file.keystore)
+#   ANDROID_KEYSTORE_PASS    - keystore password
+#   ANDROID_KEYALIAS_PASS    - key alias password
+# =============================================================================
+name: Android Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build signed APK
+    runs-on: ubuntu-latest
+    container:
+      image: unityci/editor:ubuntu-6000.0.32f1-android-3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Decode keystore
+        run: |
+          mkdir -p Tools/keystore
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > Tools/keystore/endlessrails-release.keystore
+
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-EndlessRails-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-EndlessRails-
+
+      - name: Generate assets & scene
+        run: |
+          unity-editor -batchmode -quit -nographics -projectPath . \
+            -executeMethod EndlessRails.EditorTools.ProjectSetup.SetupProject -logFile /dev/stdout
+          unity-editor -batchmode -quit -nographics -projectPath . \
+            -executeMethod EndlessRails.EditorTools.AssetFactory.GenerateAll -logFile /dev/stdout
+          unity-editor -batchmode -quit -nographics -projectPath . \
+            -executeMethod EndlessRails.EditorTools.SceneBuilder.BuildScene -logFile /dev/stdout
+
+      - name: Build APK
+        env:
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        run: |
+          unity-editor -batchmode -quit -nographics -projectPath . \
+            -executeMethod EndlessRails.EditorTools.BuildScript.BuildAndroidApk -logFile /dev/stdout
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EndlessRails-APK
+          path: Builds/Android/EndlessRails.apk
+          if-no-files-found: error
