@@ -42,7 +42,7 @@ namespace EndlessRails
             GameEvents.OnGameStateChanged += HandleGameStateChanged;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             GameEvents.OnGameStateChanged -= HandleGameStateChanged;
             base.OnDestroy();

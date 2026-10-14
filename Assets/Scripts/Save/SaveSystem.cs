@@ -34,7 +34,7 @@ namespace EndlessRails
             Application.quitting += Save;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             Application.quitting -= Save;
             base.OnDestroy();

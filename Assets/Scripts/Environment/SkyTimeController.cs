@@ -59,7 +59,7 @@ namespace EndlessRails
             GameEvents.OnDistanceChanged += HandleDistanceChanged;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             GameEvents.OnDistanceChanged -= HandleDistanceChanged;
             base.OnDestroy();

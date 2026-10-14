@@ -38,7 +38,7 @@ namespace EndlessRails
             GameEvents.OnGameOver += HandleGameOver;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
             GameEvents.OnCoinCollected -= HandleCoinCollected;
             GameEvents.OnPickupCollected -= HandlePickupCollected;

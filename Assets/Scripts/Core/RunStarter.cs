@@ -70,7 +70,7 @@ namespace EndlessRails
         private void EnableFpsText(bool enabled)
         {
             // The HUD binds its own FpsText; this toggle simply activates it.
-            Transform fps = FindFirstObjectByType<HUD>()?.transform.FindDeep<UnityEngine.UI.Text>("FpsText");
+            var fps = FindFirstObjectByType<HUD>()?.transform.FindDeep<UnityEngine.UI.Text>("FpsText");
             if (fps != null)
             {
                 fps.gameObject.SetActive(enabled);

@@ -77,7 +77,7 @@ namespace EndlessRails
 
             bool ponytail = appearance == null || appearance.ponytail;
             _ponytail = CreatePart("Ponytail", _head, new Vector3(0f, 0.16f, -0.16f),
-                new Vector3(0.08f, 0.22f, 0.08f), new Color(0.16f, 0.12f, 0.1f), PrimitiveType.Cube).transform;
+                new Vector3(0.08f, 0.22f, 0.08f), new Color(0.16f, 0.12f, 0.1f), PrimitiveType.Cube);
             _ponytail.gameObject.SetActive(ponytail);
 
             // Arms (mirrored).
@@ -101,7 +101,7 @@ namespace EndlessRails
             transform.localScale = Vector3.one * bodyScale;
         }
 
-        private GameObject CreatePart(string partName, Transform parent, Vector3 localPos, Vector3 localScale, Color color, PrimitiveType type)
+        private Transform CreatePart(string partName, Transform parent, Vector3 localPos, Vector3 localScale, Color color, PrimitiveType type)
         {
             GameObject part = GameObject.CreatePrimitive(type);
             part.name = partName;
@@ -130,7 +130,7 @@ namespace EndlessRails
                 renderer.sharedMaterial = mat;
             }
 
-            return part;
+            return part.transform;
         }
 
         private void CacheRig()
